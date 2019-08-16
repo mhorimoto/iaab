@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UECS>
+  <CCM cast="3" unit="℃" SR="S" LV="A-1M-0" exp="CPU温度" detail="OrangePiのCPU温度">OPICPUTEMP.mXX</CCM>
+  <CCM cast="0" unit="" SR="S" LV="A-1S-0" exp="機器動作状態" detail="">cnd.mXX</CCM>
+</UECS>

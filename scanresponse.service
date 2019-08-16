@@ -1,0 +1,11 @@
+[Unit]
+Description = UECS TOD Talker Scanresponse
+After = rc-local.service
+
+[Service]
+ExecStart = /usr/local/bin/scanresponse.py
+Restart = always
+Type = simple
+
+[Install]
+WantedBy = multi-user.target
