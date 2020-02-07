@@ -4,19 +4,19 @@ PYLIBD=/usr/local/lib/python3.6/dist-packages
 SYSTMD=/etc/systemd/system
 NTPDC=/etc/ntp.conf
 
-EXECP=$(TARGD)/todtalkerd.py
+EXECP=$(TARGD)/iaab.py
 SCANP=$(TARGD)/scanresponse.py
-SYSCD=$(SYSTMD)/todtalker.service
+SYSCD=$(SYSTMD)/iaab.service
 SCAND=$(SYSTMD)/scanresponse.service
 PYUECS=$(PYLIBD)/PyUECS.py
 CONFF=$(CFGFD)/config.ini
-XMLFF=$(CFGFD)/todtalker.xml
+XMLFF=$(CFGFD)/iaab.xml
 
 
 $(PYUECS): PyUECS.py
 	cp $^ $(PYLIBD)
 
-$(EXECP): todtalkerd.py
+$(EXECP): iaab.py
 	install $^ $(TARGD)
 
 $(SCANP): scanresponse.py
@@ -25,10 +25,10 @@ $(SCANP): scanresponse.py
 $(CONFF): config.ini
 	cp $^ $(CONFF)
 
-$(XMLFF): todtalker.xml
+$(XMLFF): iaab.xml
 	cp $^ $(XMLFF)
 
-$(SYSCD): todtalker.service
+$(SYSCD): iaab.service
 	cp $^ $(SYSCD)
 
 $(SCAND): scanresponse.service

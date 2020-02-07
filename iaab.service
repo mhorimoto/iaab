@@ -1,9 +1,9 @@
 [Unit]
-Description = UECS TOD Talker
+Description = UECS IAAB I Am Alive Beacon
 After = rc-local.service
 
 [Service]
-ExecStart = /usr/local/bin/todtalkerd.py
+ExecStart = /usr/local/bin/iaab.py
 Restart = always
 Type = simple
 
