@@ -11,11 +11,21 @@ Python3で動作する。
 ## 必要なモジュール
 
  * import lcd_i2c as lcd   (RPiSpiを使う)
+
+   apt install python3-smbus
+   git clone https://github.com/mhorimoto/comet1.git
+   cd comet1/lcd
+   cp lcd_i2c.py /usr/local/lib/python3.6/dist-packages/
+   install writelcd.py /usr/local/bin
+
  * import datetime
  * import time
  * import configparser
  * import netifaces
- * from socket import *
+
+   apt install python3-netifaces
+
+* from socket import *
 
 ## CCM
 
@@ -53,6 +63,10 @@ config.iniを変更することで、room,region,order,priorityの設定を変�
 
 ### インストールの方法
 
+    git clone https://github.com/mhorimoto/iaab.git
+    apt install ntp
+    cd iaab
+    sudo mkdir /etc/uecs
     sudo make install
 
  詳細は、Makefileの中を見る。
