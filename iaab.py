@@ -2,7 +2,7 @@
 #coding: utf-8
 #
 # I Am Alive Beacon
-# Version 2.00
+# Version 2.20
 # Date 2020/02/09
 # Author M.Horimoto
 #
@@ -12,12 +12,20 @@ import configparser
 import netifaces
 from socket import *
 from subprocess import check_output,Popen
+import signal
 
 XML_HEADER  = "<?xml version=\"1.0\"?>"
 UECS_HEADER = "<UECS ver=\"1.00-E10\">"
 HOST = netifaces.ifaddresses('eth0')[netifaces.AF_INET][0]['addr']
 ADDRESS = netifaces.ifaddresses('eth0')[netifaces.AF_INET][0]['broadcast']
 PORT = 16520
+
+def receive_shutdown(signum,stack):
+    tn = "cnd.mXX"
+    cndv = 134217728
+    send_UECSdata(tn,config[tn]['room'],config[tn]['region'],\
+        config[tn]['order'],config[tn]['priority'],cndv,HOST)
+    quit()
 
 def send_UECSdata(typename,room,region,order,priority,data,ip):
     s = socket(AF_INET,SOCK_DGRAM)
@@ -43,6 +51,27 @@ if (config['NODE']['lcd_present']!=0):
     import lcd_i2c as lcd
     lcd.lcd_init()
     lcdflag = True
+
+##################################################
+# Define signal handler
+##################################################
+signal.signal(signal.SIGRTMAX,receive_shutdown)
+#signal.signal(signal.SIGKILL,receive_shutdown)
+signal.signal(signal.SIGTERM,receive_shutdown)
+signal.signal(signal.SIGHUP,receive_shutdown)
+
+##################################################
+# Initialize Completed
+##################################################
+tn = "cnd.mXX"
+cndv = 67108864
+send_UECSdata(tn,config[tn]['room'],config[tn]['region'],\
+    config[tn]['order'],config[tn]['priority'],cndv,HOST)
+time.sleep(1)
+send_UECSdata(tn,config[tn]['room'],config[tn]['region'],\
+    config[tn]['order'],config[tn]['priority'],cndv,HOST)
+
+
 
 while(True):
     if (lcdflag):
@@ -75,7 +104,7 @@ while(True):
         ct = "/sys/class/thermal/thermal_zone0/temp"
         try:
             file = open(ct)
-            cput0 = file.read()
+            cput0 = file.read().strip()
         except Exception as e:
             cpute = 2097152
             if (lcdflag):
