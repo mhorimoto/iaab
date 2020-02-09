@@ -3,7 +3,7 @@
 UECSインタフェースを使って生存確認ビーコンを送出するデーモン
 
 
-Version 0.01  
+Version 2.00  
 horimoto@holly-linux.com
 
 Python3で動作する。
@@ -17,6 +17,8 @@ Python3で動作する。
      cd comet1/lcd  
      cp lcd_i2c.py /usr/local/lib/python3.6/dist-packages/  
      install writelcd.py /usr/local/bin
+
+   LCDを搭載していないモデルは、config.ini内の[NODE]にlcd_present=0を書く。  
 
  * import datetime
  * import time
@@ -101,6 +103,7 @@ cnd.mXXの書式内容は以下の通り。
 |:------:|----------:|:------------------------------|:--------:|
 | 000000 |         0 | 正常                          |    完    |
 | 000001 |   1048576 | ntpdが起動していない・停止    |    完    |
+| 000010 |   2097152 | CPU温度が測定できない          |    完    |
 | ?????x |           | 予約                          |          |
 
 * Operation Mode(4bits)

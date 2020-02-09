@@ -1,12 +1,11 @@
 #! /usr/bin/python3
 #coding: utf-8
 #
-# TOD Talker
-# Version 1.20
-# Date 2019/06/25
+# I Am Alive Beacon
+# Version 2.00
+# Date 2020/02/09
 # Author M.Horimoto
 #
-import lcd_i2c as lcd
 import datetime
 import time
 import configparser
@@ -32,57 +31,74 @@ def send_UECSdata(typename,room,region,order,priority,data,ip):
 
 ###################################################
 
+prevmin = 0
+prevsec = 0
+ip      = HOST
+lcdflag = False
+
 config = configparser.ConfigParser()
 config.read('/etc/uecs/config.ini')
 
-lcd.lcd_init()
-prevsec = 0
-itv     = 0
-ip      = HOST
+if (config['NODE']['lcd_present']!=0):
+    import lcd_i2c as lcd
+    lcd.lcd_init()
+    lcdflag = True
 
 while(True):
-    a=datetime.datetime.now()
-    d="{0:2d}{1:02d}{2:02d}".format(a.year-2000,a.month,a.day)
-    t=int("{0:2d}{1:02d}{2:02d}".format(a.hour,a.minute,a.second))
-    s="{0:6s} {1:6d}".format(d,t)
-    if (prevsec > a.second):
-        l = lcd.LCD_LINE_2
-        u = "U:{0}".format(s)
-        lcd.lcd_string(u,l)
-        tn = "Time"
+    if (lcdflag):
+        a=datetime.datetime.now()
+        d="{0:2d}{1:02d}{2:02d}".format(a.year-2000,a.month,a.day)
+        t=int("{0:2d}{1:02d}{2:02d}".format(a.hour,a.minute,a.second))
+        s="{0:6s} {1:6d}".format(d,t)
+        if (prevsec != a.second):
+            l = lcd.LCD_LINE_2
+            u = "U:{0}".format(s)
+            lcd.lcd_string(u,l)
+        l = lcd.LCD_LINE_1
+        lcd.lcd_string(s,l)
+        if (a.second>50):
+            lcd.lcd_string(ip,lcd.LCD_LINE_2)
+        elif (a.second>40):
+            msg = "UECS IAAB.."
+            lcd.lcd_string(msg,lcd.LCD_LINE_2)
+        elif (a.second>30):
+            lcd.lcd_string(ip,lcd.LCD_LINE_2)
+        elif (a.second>20):
+            msg = "UECS IAAB.."
+            lcd.lcd_string(msg,lcd.LCD_LINE_2)
+        elif (a.second>10):
+            lcd.lcd_string(ip,lcd.LCD_LINE_2)
+
+    time.sleep(0.1)
+    if (prevmin != a.minute):
+        cpute = 0   # CPU Read Error Flag
+        ct = "/sys/class/thermal/thermal_zone0/temp"
+        try:
+            file = open(ct)
+            cput0 = file.read()
+        except Exception as e:
+            cpute = 2097152
+            if (lcdflag):
+                lcd.lcd_string(e,lcd.LCD_LINE_2)
+        finally:
+            file.close()
+        tn = "OPICPUTEMP.mXX"
         send_UECSdata(tn,config[tn]['room'],config[tn]['region'],\
-                      config[tn]['order'],config[tn]['priority'],t,HOST)
-        tn = "Date"
-        send_UECSdata(tn,config[tn]['room'],config[tn]['region'],\
-                      config[tn]['order'],config[tn]['priority'],d,HOST)
-    l = lcd.LCD_LINE_1
-    lcd.lcd_string(s,l)
-    if (a.second>50):
-        lcd.lcd_string(ip,lcd.LCD_LINE_2)
-    elif (a.second>40):
-        msg = "UECS todtalker.."
-        lcd.lcd_string(msg,lcd.LCD_LINE_2)
-    elif (a.second>30):
-        lcd.lcd_string(ip,lcd.LCD_LINE_2)
-    elif (a.second>20):
-        msg = "UECS todtalker.."
-        lcd.lcd_string(msg,lcd.LCD_LINE_2)
-    elif (a.second>10):
-        lcd.lcd_string(ip,lcd.LCD_LINE_2)
-    prevsec = a.second
-    time.sleep(0.01)
-    itv += 1
-    if (itv>=8):
+                      config[tn]['order'],config[tn]['priority'],cput0,HOST)
+        
+    if (prevsec != a.second):
         tn = "cnd.mXX"
         pcmd = "ps ax | grep /usr/sbin/ntpd | grep -v grep | wc -l"
         ouv  = check_output(pcmd,shell=True)
         if (int(ouv)==0):
-            cndv = 1048576 # No ntp daemon running
+            cndv = cpute + 1048576 # No ntp daemon running
             pcmd = "systemctl restart ntp"
             popn = Popen(pcmd,shell=True)
         else:
-            cndv = 0
+            cndv = cpute + 0
         send_UECSdata(tn,config[tn]['room'],config[tn]['region'],\
                       config[tn]['order'],config[tn]['priority'],cndv,HOST)
-        itv = 0
 
+
+    prevsec = a.second
+    prevmin = a.minute
