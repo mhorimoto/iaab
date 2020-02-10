@@ -100,6 +100,10 @@ class ServerThread(threading.Thread):
                                                ccmt.attrib['LV'],ccmt.text)
                     ccmdata += "</UECS>"
                     self.udpServSock.sendto(ccmdata.encode('utf-8'),toaddr)
+                elif ( sp == 'REBOOT' ):
+                    import subprocess
+                    subprocess.call('/sbin/reboot')
+                    
                 else:
                     pass
 #            except:
