@@ -2,8 +2,8 @@
 #coding: utf-8
 #
 # I Am Alive Beacon
-# Version 2.20
-# Date 2020/02/09
+# Version 2.30
+# Date 2020/02/14
 # Author M.Horimoto
 #
 import datetime
@@ -47,7 +47,7 @@ lcdflag = False
 config = configparser.ConfigParser()
 config.read('/etc/uecs/config.ini')
 
-if (config['NODE']['lcd_present']!=0):
+if (config['NODE']['lcd_present']!='0'):
     import lcd_i2c as lcd
     lcd.lcd_init()
     lcdflag = True
@@ -74,8 +74,8 @@ send_UECSdata(tn,config[tn]['room'],config[tn]['region'],\
 
 
 while(True):
+    a=datetime.datetime.now()
     if (lcdflag):
-        a=datetime.datetime.now()
         d="{0:2d}{1:02d}{2:02d}".format(a.year-2000,a.month,a.day)
         t=int("{0:2d}{1:02d}{2:02d}".format(a.hour,a.minute,a.second))
         s="{0:6s} {1:6d}".format(d,t)
