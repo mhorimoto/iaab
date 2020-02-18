@@ -2,8 +2,8 @@
 #coding: utf-8
 #
 # I Am Alive Beacon
-# Version 2.30
-# Date 2020/02/14
+# Version 2.40
+# Date 2020/02/18
 # Author M.Horimoto
 #
 import datetime
@@ -105,6 +105,7 @@ while(True):
         try:
             file = open(ct)
             cput0 = file.read().strip()
+            cputf = float(cput0)/1000.0
         except Exception as e:
             cpute = 2097152
             if (lcdflag):
@@ -113,7 +114,7 @@ while(True):
             file.close()
         tn = "OPICPUTEMP.mXX"
         send_UECSdata(tn,config[tn]['room'],config[tn]['region'],\
-                      config[tn]['order'],config[tn]['priority'],cput0,HOST)
+                      config[tn]['order'],config[tn]['priority'],cputf,HOST)
         
     if (prevsec != a.second):
         tn = "cnd.mXX"

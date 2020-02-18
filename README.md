@@ -3,7 +3,7 @@
 UECSインタフェースを使って生存確認ビーコンを送出するデーモン
 
 
-Version 2.00  
+Version 2.40  
 horimoto@holly-linux.com
 
 Python3で動作する。
